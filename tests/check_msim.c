@@ -36,6 +36,38 @@ START_TEST( test_msim_convert ) {
 }
 END_TEST
 
+START_TEST( test_msim_convert_insufficient ) {
+   money.count = 5;
+   msim_result result = MSIM_OK;
+
+   result = msim_convert( &market, &money, &corn );
+
+   ck_assert_int_eq( result, MSIM_RESULT_NOT_ENOUGH_INPUT );
+   ck_assert_int_eq( money.count, 5 );
+   ck_assert_int_eq( corn.count, 500 );
+}
+END_TEST
+
+START_TEST( test_msim_convert_greedy ) {
+   msim_convert_greedy( &market, &money, &corn );
+
+   ck_assert_int_eq( money.count, 0 );
+   ck_assert_int_eq( corn.count, 3500 );
+}
+END_TEST
+
+START_TEST( test_msim_convert_rollover ) {
+   msim_result result = MSIM_OK;
+   corn.count = UINT16_MAX - 5;
+
+   result = msim_convert( &market, &money, &corn );
+
+   ck_assert_int_eq( result, MSIM_RESULT_OUTPUT_OVERFLOW );
+   ck_assert_int_eq( corn.count, UINT16_MAX - 5 );
+   ck_assert_int_eq( money.count, 1000 );
+}
+END_TEST
+
 Suite* msim_suite( void ) {
    Suite* s = NULL;
    TCase* tc_msim = NULL;
@@ -45,6 +77,9 @@ Suite* msim_suite( void ) {
    tc_msim = tcase_create( "msim" );
    tcase_add_checked_fixture( tc_msim, setup_msim, teardown_msim );
    tcase_add_test( tc_msim, test_msim_convert );
+   tcase_add_test( tc_msim, test_msim_convert_insufficient );
+   tcase_add_test( tc_msim, test_msim_convert_greedy );
+   tcase_add_test( tc_msim, test_msim_convert_rollover );
 
    suite_add_tcase( s, tc_msim );
 

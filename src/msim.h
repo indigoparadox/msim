@@ -12,8 +12,6 @@ typedef uint8_t msim_result;
 #define MSIM_RESULT_NOT_ENOUGH_INPUT 1
 #define MSIM_RESULT_OUTPUT_OVERFLOW 2
 
-#define MSIM_ATTRIB_GREEDY 1
-
 struct msim_res {
    uint16_t count;
    msim_res_gid id;
@@ -28,6 +26,8 @@ struct msim_cvt {
    uint16_t flags;
 };
 
+void msim_convert_greedy(
+   struct msim_cvt* cvt, struct msim_res* input, struct msim_res* output );
 msim_result msim_convert(
    struct msim_cvt* cvt, struct msim_res* input, struct msim_res* output );
 
