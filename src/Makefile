@@ -30,7 +30,14 @@ test_msim: LDFLAGS += $(shell pkg-config --libs check) -L. -lmsim
 test_msim: CFLAGS += -DCHECK -g -Wall -Werror
 test_msim: OBJDIR := ../obj/test_msim
 
-all: $(BINDIR_LINUX)/libmsim.a $(BINDIR_MSP430G2553)/libmsim.a
+city: LDFLAGS += -L. -lmsim
+city: CFLAGS += -Wall -Werror
+city: OBJDIR := ../obj/linux
+
+all: $(BINDIR_LINUX)/libmsim.a $(BINDIR_MSP430G2553)/libmsim.a city
+
+city: $(BINDIR_LINUX)/libmsim.a city.o
+	$(CC) -o $@ $^ -L$(BINDIR_LINUX) $(LDFLAGS)
 
 test_msim: $(BINDIR_LINUX)/libmsim.a $(addprefix ../obj/linux/,$(OBJECTS_TESTS))
 	$(CC) -o $@ $^ -L$(BINDIR_LINUX) $(LDFLAGS)

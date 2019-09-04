@@ -1,6 +1,7 @@
 
 #include <check.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "../src/msim.h"
 
@@ -18,19 +19,26 @@ static void setup_msim() {
    corn.id =  RES_CORN;
    corn.count = 500;
 
-   market.input = RES_MONEY;
-   market.input_count = 10;
+   market.input = calloc( 1, sizeof( struct msim_res ) );
+   market.input->id = RES_MONEY;
+   market.input->count = 10;
    market.flags = 0;
-   market.output = RES_CORN;
-   market.output_count = 30;
+   market.output = calloc( 1, sizeof( struct msim_res ) );
+   market.output->id = RES_CORN;
+   market.output->count = 30;
 }
 
 static void teardown_msim() {
+   free( market.input );
+   free( market.output );
 }
 
 START_TEST( test_msim_convert ) {
-   msim_convert( &market, &money, &corn );
+   msim_result result = MSIM_OK;
 
+   result = msim_convert( &market, &money, &corn );
+
+   ck_assert_int_eq( result, MSIM_OK );
    ck_assert_int_eq( money.count, 990 );
    ck_assert_int_eq( corn.count, 530 );
 }
