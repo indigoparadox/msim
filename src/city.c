@@ -1,7 +1,9 @@
 
 #include "msim.h"
 
-#define NULL (void*)0
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
 
 #define MCITY_RES_NONE  0
 #define MCITY_RES_MONEY 1
@@ -29,19 +31,31 @@ int main( int argc, char** argv ) {
    struct msim_res power = { 0 };
    struct mcity_building pplant = { { 0 } };
    struct msim_res res_defs[10] = { { 0 } };
+   uint8_t year = 0;
+   bool running = true;
 
-   res_defs[0].count = 50;
+   res_defs[0].count = 5;
    res_defs[0].id = MCITY_RES_MONEY;
    res_defs[0].next = NULL;
 
-   res_defs[0].count = 100;
-   res_defs[0].id = MCITY_RES_POWER;
-   res_defs[0].next = NULL;
+   res_defs[1].count = 10;
+   res_defs[1].id = MCITY_RES_POWER;
+   res_defs[1].next = NULL;
 
    pplant.engine.input = &(res_defs[0]);
    pplant.engine.output = &(res_defs[1]);
 
+   money.count = 10000;
+   money.id = MCITY_RES_MONEY;
+
+   power.id = MCITY_RES_POWER;
+
    msim_convert( &(pplant.engine), &money, &power );
+
+   while( running ) {
+      printf( "Year: %d, Money: %d, Power: %d\n",
+         year, money.count, power.count );
+   }
 
    return 0;
 }
