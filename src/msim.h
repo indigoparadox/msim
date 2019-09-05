@@ -16,20 +16,21 @@ typedef uint8_t msim_result;
 struct msim_res {
    uint16_t count;
    msim_res_gid id;
-   struct msim_res* next;
 };
 
-struct msim_cvt {
-   struct msim_res* input;
-   struct msim_res* output;
+struct msim_converter {
+   const struct msim_res* input;
+   uint8_t input_ct;
+   const struct msim_res* output;
+   uint8_t output_ct;
    msim_ticks_t interval;
    uint16_t flags;
 };
 
 void msim_convert_greedy(
-   struct msim_cvt* cvt, struct msim_res* input, struct msim_res* output );
+   const struct msim_converter* cvt, struct msim_res res[], uint8_t res_ct );
 msim_result msim_convert(
-   struct msim_cvt* cvt, struct msim_res* input, struct msim_res* output );
+   const struct msim_converter* cvt, struct msim_res res[], uint8_t res_ct );
 
 #endif /* MSIM_H */
 
