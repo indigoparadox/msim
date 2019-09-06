@@ -13,10 +13,16 @@
 #define MCITY_RES_CRIME 5
 #define MCITY_RES_MAX   6
 
-#define MCITY_BLDG_PPLANT 0
+#define MCITY_BLDG_PPLANT  0
+#define MCITY_BLDG_RES     1
+#define MCITY_BLDG_COM     2
+#define MCITY_BLDG_IND     3
+#define MCITY_BLDG_PARK    4
 
 struct mcity_building {
    const struct msim_converter* engine;
+   uint8_t id;
+   uint8_t bhs; /* business (C), happiness (R), shipping (I) */
    uint8_t x;
    uint8_t y;
 };
