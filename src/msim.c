@@ -23,7 +23,7 @@ msim_result msim_convert(
 
    for( i = 0 ; cvt->input_ct > i ; i++ ) {
       for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->input[i].id == res[j].id ) {
+         if( cvt->input[i].def->id == res[j].def->id ) {
             if( cvt->input[i].count > res[j].count ) {
                /* Not enough input to convert. */
                result = MSIM_RESULT_NOT_ENOUGH_INPUT;
@@ -37,7 +37,7 @@ msim_result msim_convert(
 
    for( i = 0 ; cvt->output_ct > i ; i++ ) {
       for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->output[i].id == res[j].id ) {
+         if( cvt->output[i].def->id == res[j].def->id ) {
             test_count = res[j].count + cvt->output[i].count;
             if( test_count < res[j].count ) {
                /* Output bin is full. */
@@ -52,7 +52,7 @@ msim_result msim_convert(
 
    for( i = 0 ; cvt->input_ct > i ; i++ ) {
       for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->input[i].id == res[j].id ) {
+         if( cvt->input[i].def->id == res[j].def->id ) {
             res[j].count -= cvt->input[i].count;
             break;
          }
@@ -61,7 +61,7 @@ msim_result msim_convert(
 
    for( i = 0 ; cvt->output_ct > i ; i++ ) {
       for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->output[i].id == res[j].id ) {
+         if( cvt->output[i].def->id == res[j].def->id ) {
             res[j].count += cvt->output[i].count;
             break;
          }
@@ -70,5 +70,15 @@ msim_result msim_convert(
 
 cleanup:
    return result;
+}
+
+void msim_decay( struct msim_res res[], uint8_t res_ct ) {
+   uint8_t i = 0;
+
+   for( i = 0 ; res_ct > i ; i++ ) {
+      if( res[i].count > res[i].def->decay ) {
+         res[i].count -= res[i].def->decay;
+      }
+   }
 }
 

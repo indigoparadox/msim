@@ -5,56 +5,70 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#define MCITY_RES_NONE  0
-#define MCITY_RES_MONEY 1
-#define MCITY_RES_WATER 2
-#define MCITY_RES_POWER 3
-#define MCITY_RES_DATA  4
-#define MCITY_RES_POP   5
-#define MCITY_RES_CRIME 6
+#define MCITY_RES_MONEY 0
+#define MCITY_RES_WATER 1
+#define MCITY_RES_POWER 2
+#define MCITY_RES_DATA  3
+#define MCITY_RES_POP   4
+#define MCITY_RES_CRIME 5
+#define MCITY_RES_MAX   6
 
 #define MCITY_BLDG_PPLANT 0
 
-uint8_t city_res_table[10][10] = {
-   /* Power Plant */
-   { 0, 50, 0, 0, 0, 0, 0, 0, 0, 0 }
-};
-
 struct mcity_building {
-   struct msim_cvt engine;
+   const struct msim_converter* engine;
    uint8_t x;
    uint8_t y;
 };
 
+const struct msim_res_def res_defs[MCITY_RES_MAX] = {
+/* id                   decay */
+   { MCITY_RES_MONEY,   0 },
+   { MCITY_RES_WATER,   0 },
+   { MCITY_RES_POWER,   0 },
+   { MCITY_RES_DATA,    0 },
+   { MCITY_RES_POP,     0 },
+   { MCITY_RES_CRIME,   0 } 
+};
+
+const struct msim_res pplant_input_money = { &(res_defs[MCITY_RES_MONEY]), 20 };
+const struct msim_res pplant_output_power =
+   { &(res_defs[MCITY_RES_POWER]), 10 };
+const struct msim_converter pplant_engine =
+   { &pplant_input_money, 1, &pplant_output_power, 1, 100, 0 };
+
 int main( int argc, char** argv ) {
-   struct msim_res money = { 0 };
-   struct msim_res power = { 0 };
-   struct mcity_building pplant = { { 0 } };
-   struct msim_res res_defs[10] = { { 0 } };
+   struct mcity_building pplant = { &pplant_engine, 10, 10 };
+   uint8_t day = 0;
+   uint8_t month = 0;
    uint8_t year = 0;
    bool running = true;
-
-   res_defs[0].count = 5;
-   res_defs[0].id = MCITY_RES_MONEY;
-   res_defs[0].next = NULL;
-
-   res_defs[1].count = 10;
-   res_defs[1].id = MCITY_RES_POWER;
-   res_defs[1].next = NULL;
-
-   pplant.engine.input = &(res_defs[0]);
-   pplant.engine.output = &(res_defs[1]);
-
-   money.count = 10000;
-   money.id = MCITY_RES_MONEY;
-
-   power.id = MCITY_RES_POWER;
-
-   msim_convert( &(pplant.engine), &money, &power );
+   struct msim_res resources[MCITY_RES_MAX] = {
+   /* definition                       count */
+      { &(res_defs[MCITY_RES_MONEY]),  10000 },
+      { &(res_defs[MCITY_RES_WATER]),  0 },
+      { &(res_defs[MCITY_RES_POWER]),  0 },
+      { &(res_defs[MCITY_RES_DATA]),   0 },
+      { &(res_defs[MCITY_RES_POP]),    0 },
+      { &(res_defs[MCITY_RES_CRIME]),  0 }
+   };
 
    while( running ) {
-      printf( "Year: %d, Money: %d, Power: %d\n",
-         year, money.count, power.count );
+      msim_convert( pplant.engine, resources, MCITY_RES_MAX );
+      printf( "Year: %d, Money: %d, Power: %d\n", year,
+         resources[MCITY_RES_MONEY].count, resources[MCITY_RES_POWER].count );
+
+      day++;
+      if( 30 <= day ) {
+         month++;
+      }
+      if( 12 <= month ) {
+         month = 0;
+         year++;
+      }
+      if( 200 <= year ) {
+         running = false;
+      }
    }
 
    return 0;

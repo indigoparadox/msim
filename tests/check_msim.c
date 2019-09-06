@@ -23,45 +23,57 @@
 #define PRICE_TEA          100
 #define PRICE_OLIVES       20
 
-struct msim_res resources[RES_COUNT];
+const struct msim_res_def res_defs[RES_COUNT] = {
+/* id             decay */
+   { RES_MONEY,   0 },
+   { RES_CORN,    0 },
+   { RES_BERRIES, 0 },
+   { RES_TEA,     0 },
+   { RES_OLIVES,  0 }
+};
 
-const struct msim_res berry_buyer_in = { 20, RES_BERRIES };
-const struct msim_res berry_buyer_out = { 5, RES_MONEY };
+struct msim_res resources[RES_COUNT] = {
+/* definition                    count */
+   { &(res_defs[RES_MONEY]),     0 },  
+   { &(res_defs[RES_CORN]),      0 },  
+   { &(res_defs[RES_BERRIES]),   0 },  
+   { &(res_defs[RES_TEA]),       0 },  
+   { &(res_defs[RES_OLIVES]),    0 }
+};
+
+const struct msim_res berry_buyer_in = { &(res_defs[RES_BERRIES]), 20 };
+const struct msim_res berry_buyer_out = { &(res_defs[RES_MONEY]), 5 };
 const struct msim_converter berry_buyer =
    { &berry_buyer_in, 1, &berry_buyer_out, 1, 0, 0 };
 
-const struct msim_res corn_buyer_in = { 30, RES_CORN };
-const struct msim_res corn_buyer_out = { 10, RES_MONEY };
+const struct msim_res corn_buyer_in = { &(res_defs[RES_CORN]), 30 };
+const struct msim_res corn_buyer_out = { &(res_defs[RES_MONEY]), 10 };
 const struct msim_converter corn_buyer =
    { &corn_buyer_in, 1, &corn_buyer_out, 1, 0, 0 };
 
-const struct msim_res tea_buyer_in = { 60, RES_TEA };
-const struct msim_res tea_buyer_out = { 100, RES_MONEY };
+const struct msim_res tea_buyer_in = { &(res_defs[RES_TEA]), 60 };
+const struct msim_res tea_buyer_out = { &(res_defs[RES_MONEY]), 100 };
 const struct msim_converter tea_buyer =
    { &tea_buyer_in, 1, &tea_buyer_out, 1, 0, 0 };
 
-const struct msim_res olive_seller_in = { 50, RES_MONEY };
-const struct msim_res olive_seller_out = { 100, RES_OLIVES };
+const struct msim_res olive_seller_in = { &(res_defs[RES_MONEY]), 50 };
+const struct msim_res olive_seller_out = { &(res_defs[RES_OLIVES]), 100 };
 const struct msim_converter olive_seller =
    { &olive_seller_in, 1, &olive_seller_out, 1, 0, 0 };
 
 const struct msim_res olive_corn_buyer_in[2] =
-   { { 100, RES_OLIVES }, { 30, RES_CORN } };
-const struct msim_res olive_corn_buyer_out = { 300, RES_MONEY };
+   { { &(res_defs[RES_OLIVES]), 100 }, { &(res_defs[RES_CORN]), 30 } };
+const struct msim_res olive_corn_buyer_out = { &(res_defs[RES_MONEY]), 300 };
 const struct msim_converter olive_corn_buyer =
    { olive_corn_buyer_in, 2, &olive_corn_buyer_out, 1, 0, 0 };
 
 static void setup_msim() {
-   resources[RES_MONEY].id = RES_MONEY;
    resources[RES_MONEY].count = STARTING_MONEY;
 
-   resources[RES_BERRIES].id =  RES_BERRIES;
    resources[RES_BERRIES].count = STARTING_BERRIES;
 
-   resources[RES_CORN].id =  RES_CORN;
    resources[RES_CORN].count = STARTING_CORN;
 
-   resources[RES_TEA].id =  RES_TEA;
    resources[RES_TEA].count = STARTING_TEA;
 }
 
