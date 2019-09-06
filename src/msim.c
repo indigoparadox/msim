@@ -1,6 +1,8 @@
 
 #include "msim.h"
 
+#include <assert.h>
+
 /** \brief Perform the resource conversion until it cannot be performed
  *         any longer due to resource constraints.
  */
@@ -22,52 +24,51 @@ msim_result msim_convert(
 ) {
    msim_result result = MSIM_OK;
    uint16_t test_count;
-   uint8_t i = 0, j = 0;
+   uint8_t res_id = 0;
+   uint8_t i = 0;
 
+   assert( NULL != cvt->input );
    for( i = 0 ; cvt->input_ct > i ; i++ ) {
-      for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->input[i].def->id == res[j].def->id ) {
-            if( cvt->input[i].count > res[j].count ) {
-               /* Not enough input to convert. */
-               result = MSIM_RESULT_NOT_ENOUGH_INPUT;
-               goto cleanup;
-            }
-            /* We found the resource, so go to the next converter. */
-            break;
-         }
+      assert( NULL != cvt->input[i].def );
+      res_id = cvt->input[i].def->id;
+      if( cvt->input[i].count > res[res_id].count ) {
+         /* Not enough input to convert. */
+         result = MSIM_RESULT_NOT_ENOUGH_INPUT;
+         goto cleanup;
       }
+      /* We found the resource, so go to the next converter. */
+      break;
    }
 
+   assert( NULL != cvt->output );
    for( i = 0 ; cvt->output_ct > i ; i++ ) {
-      for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->output[i].def->id == res[j].def->id ) {
-            test_count = res[j].count + cvt->output[i].count;
-            if( test_count < res[j].count ) {
-               /* Output bin is full. */
-               result = MSIM_RESULT_OUTPUT_OVERFLOW;
-               goto cleanup;
-            }
-            /* We found the resource, so go to the next converter. */
-            break;
-         }
+      assert( NULL != cvt->output[i].def );
+      res_id = cvt->output[i].def->id;
+      test_count = res[res_id].count + cvt->output[i].count;
+      if( test_count < res[res_id].count ) {
+         /* Output bin is full. */
+         result = MSIM_RESULT_OUTPUT_OVERFLOW;
+         goto cleanup;
       }
+      /* We found the resource, so go to the next converter. */
+      break;
    }
 
+   /* Perform the input. */
    for( i = 0 ; cvt->input_ct > i ; i++ ) {
-      for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->input[i].def->id == res[j].def->id ) {
-            res[j].count -= cvt->input[i].count;
-            break;
-         }
+      res_id = cvt->input[i].def->id;
+      if( cvt->input[i].def->id == res[res_id].def->id ) {
+         res[res_id].count -= cvt->input[i].count;
+         break;
       }
    }
 
+   /* Perform the output. */
    for( i = 0 ; cvt->output_ct > i ; i++ ) {
-      for( j = 0 ; res_ct > j ; j++ ) {
-         if( cvt->output[i].def->id == res[j].def->id ) {
-            res[j].count += cvt->output[i].count;
-            break;
-         }
+      res_id = cvt->output[i].def->id;
+      if( cvt->output[i].def->id == res[res_id].def->id ) {
+         res[res_id].count += cvt->output[i].count;
+         break;
       }
    }
 
