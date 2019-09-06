@@ -1,6 +1,9 @@
 
 #include "msim.h"
 
+/** \brief Perform the resource conversion until it cannot be performed
+ *         any longer due to resource constraints.
+ */
 void msim_convert_greedy(
    const struct msim_converter* cvt, struct msim_res res[], uint8_t res_ct
 ) {
@@ -72,6 +75,8 @@ cleanup:
    return result;
 }
 
+/** \brief Perform decays on the specified resource stack.
+ */
 void msim_decay( struct msim_res res[], uint8_t res_ct ) {
    uint8_t i = 0;
 
